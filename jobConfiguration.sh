@@ -17,45 +17,35 @@ echo -e "${Green}Installing job apps start... ${Default}"
 	sudo apt update
 	sudo apt install -y git
 	
-	wget -P ~/Downloads -O ~/Downloads/jetbrains-toolbox.tar.gz https://www.jetbrains.com/toolbox-app/download/download-thanks.html?platform=linux
-	tar -xvf ~/Downloads/jetbrains-toolbox.tar.gz -C ~/Downloads/
-	
-	
-	#Install PHP 8.1
-	sudo apt install --no-install-recommends php8.1
-	##module
-	sudo apt-get install -y php8.1-cli php8.1-common php8.1-mysql php8.1-zip php8.1-gd php8.1-mbstring php8.1-curl php8.1-xml php8.1-bcmath
-	
-	#Install composer 
-	php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-	php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-	php composer-setup.php
-	php -r "unlink('composer-setup.php');"
-	##make composer globaly
-	mv composer.phar /usr/local/bin/composer
+    # https://github.com/nagygergo/jetbrains-toolbox-install
+    #todo: add install phpstorm automaticaly
+	curl -fsSL https://raw.githubusercontent.com/nagygergo/jetbrains-toolbox-install/master/jetbrains-toolbox.sh | bash
 	
 	sleep 3
 echo -e "${Green}Installing job apps finish... ${Default}"
-
-
 
 echo -e "${Green}Configuration git start... ${Default}"
 	git config --global user.name "Lubynets Kyrylo"
 	git config --global user.email "dev.lubinets@gmail.com"
 	git config --global core.autocrlf true
 
-	#unzip ~/unix_data/linux_install/ssh.zip -d ~/Downloads/
-	#cp -r ~/Downloads/.ssh ~
-	#rm -rf ~/Downloads/.ssh
-	#sudo chmod 700 ~/.ssh
-	#sudo chmod 644 ~/.ssh/known_hosts
-	#sudo chmod 644 ~/.ssh/config
-	#sudo chmod 600 ~/.ssh/personal_rsa
-	#sudo chmod 644 ~/.ssh/personal_rsa.pub
-	#sudo chmod 600 ~/.ssh/ab_soft_id_rsa
-	#sudo chmod 644 ~/.ssh/ab_soft_id_rsa.pub
-	
-    sleep 3
+	cp -R ../.ssh ~/.ssh
+
+    #Show git config
+    git config --list --show-origin
+    # Add ssh keys
+    sudo chmod 700 ~/.ssh
+    sudo chmod 644 ~/.ssh/known_hosts
+    sudo chmod 644 ~/.ssh/config #  I need create config directory
+    sudo chmod 600 ~/.ssh/dev-github
+    sudo chmod 644 ~/.ssh/dev-github.pub
+    sudo chmod 600 ~/.ssh/ideal4finance
+    sudo chmod 644 ~/.ssh/ideal4finance.pub
+    sudo chmod -R 0644 *.pub
+    ssh-add *.pub
+    #Show add ssh keys 
+	ssh-add -l
+    sleep 5 ## add send information to slack or another messenger
 echo -e "${Green}Configuration git finish... ${Default}"
 
 
@@ -86,11 +76,6 @@ echo -e "${Green}Installing docker compose start... ${Default}"
 	sleep 3
 echo -e "${Green}Installing docker compose finish... ${Default}"
 
-#sudo curl -L https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && \
-#sudo chmod +x /tmp/docker-machine
-#sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
-
-
 #Install docker desktop
 	sudo apt -y install gnome-terminal
 	sudo apt remove docker-desktop
@@ -99,7 +84,7 @@ echo -e "${Green}Installing docker compose finish... ${Default}"
 	sudo apt purge docker-desktop
 	
 	wget -O docker-desktop.deb 'https://desktop.docker.com/linux/main/amd64/docker-desktop-4.13.1-amd64.deb?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-linux-amd64'
-	sudo apt-get install ./docker-desktop.deb
+	sudo apt-get install ./docker-desktop.deb #todo: add -y to install without user interaction
 	
 	
 read -p -e "${Purple}Finish installation. Press any key to continue... ${Default}" -n1 -s
